@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SQL Window Functions Practice</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6f8;--pn:#fff;--tx:#39424e;--mu:#7b8794;--bd:#dfe3e8;--ed:#0e141b;--edt:#d6e2ee;--g:#1ba94c;--r:#d93f3f;--hd:#0e141b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0e141b;--pn:#1c2530;--tx:#c3cfdb;--mu:#8795a5;--bd:#2a3644;--ed:#0a0f15;--g:#2ec866;--hd:#080c11}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0e141b;--pn:#1c2530;--tx:#c3cfdb;--mu:#8795a5;--bd:#2a3644;--ed:#0a0f15;--g:#2ec866;--hd:#080c11}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{background:var(--hd);color:#fff;display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap}
+header b{font-size:19px}header b span{color:var(--g)}header .sp{flex:1}
+.pill{border:1px solid #2f3b49;border-radius:20px;padding:3px 12px;font-size:13px;color:#cfd8e2}
+.wrap{display:grid;grid-template-columns:230px 1fr;gap:14px;padding:14px;max-width:1500px;margin:auto}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:8px}
+#list{padding:8px;align-self:start}#list button{display:flex;width:100%;gap:8px;align-items:center;background:none;border:0;color:inherit;text-align:left;padding:9px 10px;border-radius:6px;cursor:pointer;font:inherit;font-size:14px}
+#list button:hover{background:var(--bg)}#list button.on{background:var(--bg);box-shadow:inset 3px 0 var(--g);font-weight:600}
+.n{color:var(--mu);width:20px}.ck{margin-left:auto;color:var(--g);font-weight:700}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:14px}
+.pad{padding:18px 20px}h2{margin:0 0 6px;font-size:21px}h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin:20px 0 8px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:12px;margin-bottom:10px}
+.Easy{background:#1ba94c22;color:var(--g)}.Medium{background:#e8a31722;color:#d99a12}.Hard{background:#d93f3f22;color:var(--r)}
+code,pre,textarea,table.t{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sch{font-size:12.5px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:pre;margin:0;line-height:1.6}
+.note{font-size:13.5px;border-left:3px solid var(--g);background:var(--bg);padding:8px 12px;border-radius:0 6px 6px 0;margin-top:12px}
+.ov{overflow-x:auto;max-height:260px;overflow-y:auto;border:1px solid var(--bd);border-radius:6px}
+table.t{border-collapse:collapse;font-size:12.5px;width:100%}.t th,.t td{padding:5px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}.t th{background:var(--bg);position:sticky;top:0}
+.edh{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--mu);gap:8px}.edh .sp{flex:1}
+.ew{position:relative;height:340px;background:var(--ed);overflow:hidden}
+#hl,#ed{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:14px;border:0;font-size:13.5px;line-height:1.6;tab-size:4;white-space:pre;overflow:auto;letter-spacing:0}
+#hl{pointer-events:none;color:var(--edt);overflow:hidden}
+#ed{background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:#fff;resize:none;outline:0}
+#ed::selection{background:#3b6ab088;-webkit-text-fill-color:transparent}
+.tk{color:#c792ea}.tw{color:#ffcb6b;font-weight:700}.tf{color:#82aaff}.ts{color:#c3e88d}.tq{color:#4fd6be}.tn{color:#f78c6c}.tc{color:#637b8f;font-style:italic}.tp{color:#89ddff}
+.bar{display:flex;gap:10px;padding:10px 14px;border-top:1px solid var(--bd);align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--bd);background:var(--pn);color:var(--tx);padding:8px 18px;border-radius:5px;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}.btn.go{background:var(--g);border-color:var(--g);color:#fff}.btn:hover{filter:brightness(1.08)}select{background:var(--pn);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font:inherit;font-size:13px}
+.hint{color:var(--mu);font-size:12px;margin-left:auto}
+#out{padding:14px}.v{font-weight:700;font-size:16px;margin-bottom:8px}.ok{color:var(--g)}.bad{color:var(--r)}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}.main{grid-template-columns:1fr}#list{display:flex;overflow-x:auto}#list button{white-space:nowrap;width:auto}}
+</style></head><body>
+<header><b>SQL<span>Rank</span></b><span class="pill">Window Functions · Lecture 9</span><span class="sp"></span><span class="pill" id="sc">Solved 0 / 10</span></header>
+<div class="wrap"><nav class="card" id="list"></nav><div class="main">
+<section class="card pad" id="pb"></section>
+<section><div class="card"><div class="edh"><span>● SQL dialect</span><select id="dl"><option value="tsql">T-SQL (SQL Server)</option><option value="pg">PostgreSQL</option><option value="sqlite">SQLite</option></select><span class="sp"></span><span id="st">Loading engine…</span></div>
+<div class="ew"><pre id="hl" aria-hidden="true"></pre><textarea id="ed" wrap="off" spellcheck="false" autocapitalize="off"></textarea></div>
+<div class="bar"><button class="btn" id="run">Run Code</button><button class="btn go" id="sub">Submit</button><button class="btn" id="rs">Reset</button><span class="hint">Ctrl+Enter = Run</span></div></div>
+<div class="card" id="out" style="margin-top:14px"><span style="color:var(--mu)">Run your query to see output here.</span></div></section></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-asm.js"></script>
+<script>
+const W=(f,o)=>`${f} OVER (${o})`;
+const P=[
+{t:"Order Price vs Category Average",d:"Easy",x:"Show each product’s <code>ProductID</code>, <code>ProductName</code>, <code>CategoryName</code>, <code>UnitPrice</code> and the average price of its category as <code>AvgCategoryPrice</code>. Sort by category name, then price descending.",h:"AVG() OVER (PARTITION BY …)",
+s:`SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice,
+ AVG(p.UnitPrice) OVER (PARTITION BY c.CategoryName) AS AvgCategoryPrice
+FROM Products p JOIN Categories c ON p.CategoryID=c.CategoryID
+ORDER BY c.CategoryName, p.UnitPrice DESC`},
+{t:"Employee Running Total Sales",d:"Medium",x:"For <b>EmployeeID = 1</b>, list <code>FirstName</code>, <code>LastName</code>, <code>OrderDate</code>, <code>ExtendedPrice</code> (UnitPrice × Quantity × (1 − Discount)) and the cumulative sum as <code>RunningTotalSales</code>, ordered by date.",h:"SUM() OVER (PARTITION BY … ORDER BY … ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)",
+s:`SELECT e.FirstName, e.LastName, o.OrderDate,
+ od.UnitPrice*od.Quantity*(1-od.Discount) AS ExtendedPrice,
+ SUM(od.UnitPrice*od.Quantity*(1-od.Discount)) OVER (PARTITION BY o.EmployeeID ORDER BY o.OrderDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS RunningTotalSales
+FROM Orders o JOIN "Order Details" od ON o.OrderID=od.OrderID JOIN Employees e ON o.EmployeeID=e.EmployeeID
+WHERE e.EmployeeID=1 ORDER BY o.OrderDate`},
+{t:"Top 3 Products per Supplier",d:"Medium",x:"Identify the <b>3 most expensive products per supplier</b>. Return <code>Supplier</code> (CompanyName), <code>ProductName</code>, <code>UnitPrice</code>, ordered by supplier and rank.",h:"ROW_NUMBER() in a CTE, then filter",
+s:`WITH R AS (SELECT s.CompanyName AS Supplier, p.ProductName, p.UnitPrice,
+ ROW_NUMBER() OVER (PARTITION BY p.SupplierID ORDER BY p.UnitPrice DESC) AS PriceRank
+FROM Products p JOIN Suppliers s ON p.SupplierID=s.SupplierID)
+SELECT Supplier, ProductName, UnitPrice FROM R WHERE PriceRank<=3 ORDER BY Supplier, PriceRank`},
+{t:"Freight vs Previous Order",d:"Easy",x:"For the customer whose <code>CustomerID</code> is <b>'VINET'</b> (filter on <code>Orders.CustomerID = 'VINET'</code>), show <code>OrderID</code>, <code>OrderDate</code>, <code>Freight</code>, the previous order’s freight as <code>PreviousOrderFreight</code>, and the difference as <code>FreightChange</code>. Order by date.",h:"LAG(col, 1) OVER (PARTITION BY … ORDER BY …)",
+s:`SELECT o.OrderID, o.OrderDate, o.Freight,
+ LAG(o.Freight,1) OVER (PARTITION BY o.CustomerID ORDER BY o.OrderDate) AS PreviousOrderFreight,
+ o.Freight - LAG(o.Freight,1) OVER (PARTITION BY o.CustomerID ORDER BY o.OrderDate) AS FreightChange
+FROM Orders o WHERE o.CustomerID='VINET' ORDER BY o.OrderDate`},
+{t:"Customer Sales Quartiles",d:"Medium",x:"Sales Management wants to group customers into four tiers (quartiles) by total purchase value (UnitPrice × Quantity × (1 − Discount)) for a loyalty program. Return <code>CustomerID</code>, <code>TotalSalesValue</code>, <code>SalesQuartile</code> (1 = top 25%). Order by quartile, then total descending.",h:"NTILE(4) over a CTE of per-customer totals",
+s:`WITH C AS (SELECT o.CustomerID, SUM(od.UnitPrice*od.Quantity*(1-od.Discount)) AS TotalSalesValue
+FROM Orders o JOIN "Order Details" od ON o.OrderID=od.OrderID GROUP BY o.CustomerID)
+SELECT CustomerID, TotalSalesValue, NTILE(4) OVER (ORDER BY TotalSalesValue DESC) AS SalesQuartile
+FROM C ORDER BY SalesQuartile, TotalSalesValue DESC`},
+{t:"Shipped Date vs Next Required Date",d:"Hard",x:"For the customers whose <code>CustomerID</code> is <b>'VINET'</b> or <b>'CHOPS'</b> (filter on <code>Orders.CustomerID IN ('VINET','CHOPS')</code>), show <code>OrderID, CustomerID, OrderDate, ShippedDate, RequiredDate</code>, the next order’s required date as <code>NextOrderRequiredDate</code>, and the days from this order’s ShippedDate to that date as <code>DaysUntilNextOrderRequired</code>. Order the result by <code>CustomerID</code>, then <code>ShippedDate</code>.",h:"LEAD(RequiredDate,1) … ; days: DATEDIFF(day, a, b) in T-SQL; julianday(b) − julianday(a) in PostgreSQL/SQLite mode.",
+s:`SELECT OrderID, CustomerID, OrderDate, ShippedDate, RequiredDate,
+ LEAD(RequiredDate,1) OVER (PARTITION BY CustomerID ORDER BY OrderDate) AS NextOrderRequiredDate,
+ CAST(julianday(LEAD(RequiredDate,1) OVER (PARTITION BY CustomerID ORDER BY OrderDate)) - julianday(ShippedDate) AS INTEGER) AS DaysUntilNextOrderRequired
+FROM Orders WHERE CustomerID IN ('VINET','CHOPS') ORDER BY CustomerID, ShippedDate`},
+{t:"3-Order Moving Average Freight",d:"Easy",x:"Smooth out volatile freight costs: show <code>OrderID</code>, <code>OrderDate</code>, <code>Freight</code> and the average over the current and 2 preceding orders as <code>ThreeOrderMovingAvgFreight</code>. Ignore NULL dates; order by date.",h:"ROWS BETWEEN 2 PRECEDING AND CURRENT ROW",
+s:`SELECT OrderID, OrderDate, Freight,
+ AVG(Freight) OVER (ORDER BY OrderDate ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS ThreeOrderMovingAvgFreight
+FROM Orders WHERE OrderDate IS NOT NULL ORDER BY OrderDate`},
+{t:"Min / Max Price per Category",d:"Medium",x:"Show <code>CategoryName</code>, <code>ProductName</code>, <code>UnitPrice</code>, plus the category’s highest price as <code>MaxCategoryPrice</code> and lowest as <code>MinCategoryPrice</code> — using <b>FIRST_VALUE</b> and <b>LAST_VALUE</b>. Order by category, price descending.",h:"LAST_VALUE needs ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING",
+s:`SELECT c.CategoryName, p.ProductName, p.UnitPrice,
+ FIRST_VALUE(p.UnitPrice) OVER (PARTITION BY c.CategoryName ORDER BY p.UnitPrice DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS MaxCategoryPrice,
+ LAST_VALUE(p.UnitPrice) OVER (PARTITION BY c.CategoryName ORDER BY p.UnitPrice DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS MinCategoryPrice
+FROM Products p JOIN Categories c ON p.CategoryID=c.CategoryID ORDER BY c.CategoryName, p.UnitPrice DESC`},
+{t:"Employee Sales Ranking (No Gaps)",d:"Medium",x:"HR wants top performers by <b>gross sales</b> (UnitPrice × Quantity, no discount). Return <code>EmployeeID</code>, <code>EmployeeName</code> (first name, a space, last name — join them with <code>+</code>, <code>||</code> or <code>CONCAT()</code>), <code>GrossSales</code>, and <code>SalesRank</code> — ties share a rank and there are no gaps. Order by rank.",h:"DENSE_RANK(). Concatenate with + (T-SQL), || (PostgreSQL/SQLite), or CONCAT(first, ' ', last) in any dialect.",
+s:`WITH G AS (SELECT e.EmployeeID, e.FirstName || ' ' || e.LastName AS EmployeeName, SUM(od.UnitPrice*od.Quantity) AS GrossSales
+FROM Employees e JOIN Orders o ON e.EmployeeID=o.EmployeeID JOIN "Order Details" od ON o.OrderID=od.OrderID
+GROUP BY e.EmployeeID, e.FirstName, e.LastName)
+SELECT EmployeeID, EmployeeName, GrossSales, DENSE_RANK() OVER (ORDER BY GrossSales DESC) AS SalesRank
+FROM G ORDER BY SalesRank, GrossSales DESC`},
+{t:"10-Order Moving Average & % Diff",d:"Hard",x:"Finance wants to compare each order’s freight to the average of the last ten orders (including the current). Return <code>OrderID, OrderDate, Freight</code>, <code>TenOrderMovingAvgFreight</code>, and <code>PctDiffFromAvg</code> = (Freight − avg) × 100.0 / avg. Order by date.",h:"ROWS BETWEEN 9 PRECEDING AND CURRENT ROW",
+s:`SELECT OrderID, OrderDate, Freight,
+ AVG(Freight) OVER (ORDER BY OrderDate ROWS BETWEEN 9 PRECEDING AND CURRENT ROW) AS TenOrderMovingAvgFreight,
+ (Freight - AVG(Freight) OVER (ORDER BY OrderDate ROWS BETWEEN 9 PRECEDING AND CURRENT ROW)) * 100.0 / AVG(Freight) OVER (ORDER BY OrderDate ROWS BETWEEN 9 PRECEDING AND CURRENT ROW) AS PctDiffFromAvg
+FROM Orders ORDER BY OrderDate`}];
+const SCH=`Categories(CategoryID, CategoryName)
+Suppliers(SupplierID, CompanyName)
+Products(ProductID, ProductName, SupplierID, CategoryID, UnitPrice)
+Employees(EmployeeID, FirstName, LastName)
+Customers(CustomerID, CompanyName)
+Orders(OrderID, CustomerID, EmployeeID, OrderDate, RequiredDate, ShippedDate, Freight)
+"Order Details"(OrderID, ProductID, UnitPrice, Quantity, Discount)`;
+let db,cur=0,solved=new Set(),drafts={};
+const $=i=>document.getElementById(i);
+try{const j=JSON.parse(localStorage.getItem("sqlrank")||"{}");solved=new Set(j.s||[]);drafts=j.d||{}}catch(e){}
+function save(){try{localStorage.setItem("sqlrank",JSON.stringify({s:[...solved],d:drafts}))}catch(e){}}
+function build(SQL){
+ db=new SQL.Database();
+ db.create_function("DATEDIFF_DAY",(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5));
+ const yd=t=>{const x=new Date(t);return t==null||isNaN(x)?null:x};
+ db.create_function("DATEDIFF_U",(u,a,b)=>{const x=yd(a),y=yd(b);if(!x||!y)return null;u=String(u).toLowerCase();if(/^(year|yy|yyyy)$/.test(u))return y.getUTCFullYear()-x.getUTCFullYear();if(/^(month|mm|m)$/.test(u))return (y.getUTCFullYear()-x.getUTCFullYear())*12+y.getUTCMonth()-x.getUTCMonth();return Math.trunc((y-x)/(/^(week|wk|ww)$/.test(u)?6048e5:/^(hour|hh)$/.test(u)?36e5:864e5))});
+ db.create_function("DATEADD_U",(u,n,d)=>{const x=yd(d);if(!x)return null;u=String(u).toLowerCase();n=+n;if(/^(year|yy|yyyy)$/.test(u))x.setUTCFullYear(x.getUTCFullYear()+n);else if(/^(month|mm|m)$/.test(u))x.setUTCMonth(x.getUTCMonth()+n);else x.setUTCDate(x.getUTCDate()+n*(/^(week|wk|ww)$/.test(u)?7:1));return x.toISOString().slice(0,10)});
+ db.create_function("YEAR",d=>{const x=yd(d);return x&&x.getUTCFullYear()});
+ db.create_function("MONTH",d=>{const x=yd(d);return x&&x.getUTCMonth()+1});
+ db.create_function("DAY",d=>{const x=yd(d);return x&&x.getUTCDate()});
+ db.run(`CREATE TABLE Categories(CategoryID INTEGER PRIMARY KEY,CategoryName TEXT);CREATE TABLE Suppliers(SupplierID INTEGER PRIMARY KEY,CompanyName TEXT);
+CREATE TABLE Products(ProductID INTEGER PRIMARY KEY,ProductName TEXT,SupplierID INT,CategoryID INT,UnitPrice REAL);CREATE TABLE Employees(EmployeeID INTEGER PRIMARY KEY,FirstName TEXT,LastName TEXT);
+CREATE TABLE Customers(CustomerID TEXT PRIMARY KEY,CompanyName TEXT);CREATE TABLE Orders(OrderID INTEGER PRIMARY KEY,CustomerID TEXT,EmployeeID INT,OrderDate TEXT,RequiredDate TEXT,ShippedDate TEXT,Freight REAL);
+CREATE TABLE "Order Details"(OrderID INT,ProductID INT,UnitPrice REAL,Quantity INT,Discount REAL);`);
+ const ins=(t,rows)=>{const st=db.prepare(`INSERT INTO ${t} VALUES(${rows[0].map(()=>"?").join(",")})`);rows.forEach(r=>st.run(r));st.free()};
+ let s=7;const R=()=>(s=(s*1664525+1013904223)%4294967296)/4294967296,rd=x=>Math.round(x*100)/100;
+ const D=n=>new Date(Date.UTC(2024,0,1+n)).toISOString().slice(0,10);
+ ins("Categories",["Beverages","Condiments","Confections","Dairy","Seafood"].map((n,i)=>[i+1,n]));
+ ins("Suppliers",[..."ABCDEF"].map((c,i)=>[i+1,"Supplier "+c]));
+ const pr=[];for(let i=0;i<30;i++)pr.push([i+1,"Product "+(i+1),i%6+1,i%5+1,rd(5+(i*37)%100+i/100)]);ins("Products",pr);
+ ins("Employees",[["Nancy","Davolio"],["Andrew","Fuller"],["Janet","Leverling"],["Margaret","Peacock"],["Steven","Buchanan"]].map((n,i)=>[i+1,...n]));
+ const C=["VINET","CHOPS","ALFKI","ANATR","BERGS","BLONP","FOLKO","HANAR","LILAS","MAISD","QUICK","SAVEA"];
+ ins("Customers",C.map(c=>[c,c+" Co."]));
+ const o=[],d=[],dc=[0,.05,.1,.15];
+ for(let i=0;i<120;i++){o.push([i+1,C[i%12],i%5+1,D(i*3),D(i*3+28),D(i*3+2+Math.floor(R()*8)),rd(5+R()*80)]);const p=pr[Math.floor(R()*30)];d.push([i+1,p[0],p[4],1+Math.floor(R()*20),dc[Math.floor(R()*4)]])}
+ ins("Orders",o);ins("\"Order Details\"",d);
+}
+const nv=v=>v===null?"NULL":typeof v==="number"?String(Math.round(v*100)/100):String(v);
+function cc(s){let i;while((i=s.search(/\bCONCAT\s*\(/i))>=0){const st=s.indexOf("(",i);let d=0,a=[],cur="",j=st+1,q=null;for(;j<s.length;j++){const c=s[j];if(q){cur+=c;if(c===q)q=null;continue}if(c==="'"||c==='"'){q=c;cur+=c;continue}if(c==="(")d++;else if(c===")"){if(d===0)break;d--}if(c===","&&d===0){a.push(cur);cur="";continue}cur+=c}a.push(cur);s=s.slice(0,i)+"("+a.map(x=>"COALESCE("+x.trim()+",'')").join("||")+")"+s.slice(j+1)}return s}
+function tr(s){
+ s=cc(s);const d=$("dl").value;if(d==="sqlite")return s;
+ s=s.replace(/\bSTRING_AGG\s*\(/gi,"GROUP_CONCAT(").replace(/\bILIKE\b/gi,"LIKE").replace(/\b(?:NOW|GETDATE|SYSDATETIME)\s*\(\s*\)/gi,"datetime('now')").replace(/OFFSET\s+(\d+)\s+ROWS?\s+FETCH\s+(?:FIRST|NEXT)\s+(\d+)\s+ROWS?\s+ONLY/gi,"LIMIT $2 OFFSET $1").replace(/FETCH\s+(?:FIRST|NEXT)\s+(\d+)\s+ROWS?\s+ONLY/gi,"LIMIT $1");
+ if(d==="tsql"){
+  s=s.replace(/\[([^\]]+)\]/g,'"$1"').replace(/\+(\s*')/g,"||$1").replace(/(')\s*\+/g,"$1 ||").replace(/\bISNULL\s*\(/gi,"IFNULL(").replace(/\bLEN\s*\(/gi,"LENGTH(").replace(/\bDATEDIFF\s*\(\s*(\w+)\s*,/gi,"DATEDIFF_U('$1',").replace(/\bDATEADD\s*\(\s*(\w+)\s*,/gi,"DATEADD_U('$1',");
+  if(!/^\s*WITH\b/i.test(s)){let n=null;s=s.replace(/\bSELECT\s+TOP\s*\(?\s*(\d+)\s*\)?/i,(m,x)=>{n=x;return"SELECT"});if(n)s=s.replace(/;?\s*$/," LIMIT "+n)}
+ }else{
+  s=s.replace(/((?:[\w.]+\([^()]*\)|\([^()]*\)|[\w."]+))::\s*(\w+)(?:\s+precision)?(?:\s*\(\s*\d+(?:\s*,\s*\d+)?\s*\))?/gi,(m,x,t)=>`CAST(${x} AS ${/int|serial/i.test(t)?"INTEGER":/num|dec|float|double|real|money/i.test(t)?"REAL":"TEXT"})`).replace(/EXTRACT\s*\(\s*(year|month|day)\s+FROM\s+([^()]+)\)/gi,(m,u,x)=>`CAST(strftime('${{year:"%Y",month:"%m",day:"%d"}[u.toLowerCase()]}',${x}) AS INTEGER)`);
+ }
+ return s}
+function q(sql){sql=sql.replace(/DATEDIFF\s*\(\s*day\s*,/gi,"DATEDIFF_DAY(");const r=db.exec(sql);return r.length?r[r.length-1]:{columns:[],values:[]}}
+function tbl(r,max){return `<div class="ov"><table class="t"><tr>${r.columns.map(c=>`<th>${c}</th>`).join("")}</tr>${r.values.slice(0,max).map(v=>`<tr>${v.map(x=>`<td>${nv(x)}</td>`).join("")}</tr>`).join("")}</table></div>`+(r.values.length>max?`<div style="font-size:12px;color:var(--mu);margin-top:4px">Showing ${max} of ${r.values.length} rows</div>`:"")}
+function show(i){
+ cur=i;const p=P[i],ex=db?q(p.s):null;
+ $("pb").innerHTML=`<h2>${i+1}. ${p.t}</h2><span class="tag ${p.d}">${p.d}</span><div>${p.x}</div>
+ <div class="note"><b>Hint:</b> ${p.h}</div><h3>Schema</h3><pre class="sch">${SCH}</pre>
+ <h3>Sample expected output</h3>${ex?`${tbl(ex,3)}<div style="font-size:12px;color:var(--mu);margin-top:4px">${ex.values.length} rows in total</div>`:'<span style="color:var(--mu)">Loading…</span>'}
+ <p style="font-size:12.5px;color:var(--mu)">Column order and row count must match; column names, row order and rounding past 2 decimals are ignored. Choose <b>T-SQL</b>, <b>PostgreSQL</b> or <b>SQLite</b> above the editor: T-SQL and PostgreSQL queries are translated to run in the browser. Not translated: PostgreSQL date subtraction (<code>date − date</code>); use <code>DATEDIFF</code> or <code>julianday</code> instead.</p>`;
+ $("ed").value=drafts[i]??"-- Write your query here\n";
+ $("out").innerHTML='<span style="color:var(--mu)">Run your query to see output here.</span>';
+ hlr();draw()}
+function draw(){
+ $("list").innerHTML=P.map((p,i)=>`<button class="${i==cur?"on":""}" data-i="${i}"><span class="n">${i+1}</span>${p.t}<span class="ck">${solved.has(i)?"✓":""}</span></button>`).join("");
+ $("sc").textContent=`Solved ${solved.size} / ${P.length}`}
+$("list").onclick=e=>{const b=e.target.closest("button");if(b){drafts[cur]=$("ed").value;save();show(+b.dataset.i)}};
+const KW=new Set("SELECT FROM WHERE JOIN INNER LEFT RIGHT FULL OUTER CROSS ON AS WITH GROUP BY ORDER HAVING PARTITION OVER ROWS RANGE BETWEEN AND OR NOT IN IS NULL UNBOUNDED PRECEDING FOLLOWING CURRENT ROW DESC ASC LIMIT OFFSET TOP DISTINCT CASE WHEN THEN ELSE END UNION ALL EXISTS LIKE ILIKE CAST FETCH FIRST NEXT ONLY".split(" ")),WF=new Set("ROW_NUMBER RANK DENSE_RANK NTILE LAG LEAD FIRST_VALUE LAST_VALUE NTH_VALUE PERCENT_RANK CUME_DIST".split(" ")),AG=new Set("SUM AVG COUNT MIN MAX".split(" "));
+function hlr(){const v=$("ed").value;
+ $("hl").innerHTML=v.replace(/(--[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^']|'')*'|"(?:[^"]|"")*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|([\s\S])/g,(m,c,s,n,w,o,off)=>{
+  const e=m.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  if(c)return `<span class="tc">${e}</span>`;
+  if(s)return `<span class="${m[0]==='"'?"tq":"ts"}">${e}</span>`;
+  if(n)return `<span class="tn">${e}</span>`;
+  if(w){const u=w.toUpperCase();if(WF.has(u))return `<span class="tw">${e}</span>`;if(KW.has(u))return `<span class="tk">${e}</span>`;if(AG.has(u)||v[off+m.length]==="(")return `<span class="tf">${e}</span>`;return e}
+  return /[=<>+\-*\/%|,;().]/.test(m)?`<span class="tp">${e}</span>`:e})+"\n"}
+$("ed").onscroll=()=>{const h=$("hl");h.scrollTop=$("ed").scrollTop;h.scrollLeft=$("ed").scrollLeft};
+$("ed").oninput=()=>{drafts[cur]=$("ed").value;save();hlr()};
+$("ed").onkeydown=e=>{if(e.key==="Tab"){e.preventDefault();const t=e.target,a=t.selectionStart;t.setRangeText("    ",a,t.selectionEnd,"end");hlr()}if(e.ctrlKey&&e.key==="Enter"){e.preventDefault();run(false)}};
+function run(submit){
+ if(!db){$("out").innerHTML='<span class="bad">SQL engine is still loading…</span>';return}
+ let r;const sq=tr($("ed").value);try{r=q(sq)}catch(e){$("out").innerHTML=`<div class="v bad">✗ Compilation Error</div><pre class="sch">${String(e.message).replace(/</g,"&lt;")}</pre>`;return}
+ if(!r.columns.length){$("out").innerHTML='<div class="v bad">Query returned no result set.</div>';return}
+ let head="";
+ if(submit){
+  const ex=q(P[cur].s);let msg=null;
+  if(r.columns.length!==ex.columns.length)msg=`Expected ${ex.columns.length} columns, but your query returned ${r.columns.length}.`;
+  else if(r.values.length!==ex.values.length)msg=`Expected ${ex.values.length} rows, but your query returned ${r.values.length}.`;
+  else{const k=x=>x.values.map(v=>JSON.stringify(v.map(nv))).sort().join("|");if(k(r)!==k(ex))msg="Row count matches, but some values differ from the expected output."}
+  if(msg)head=`<div class="v bad">✗ Wrong Answer</div><div style="margin-bottom:10px">${msg}</div>`;
+  else{head=`<div class="v ok">✓ Congratulations! Test case passed</div>`;solved.add(cur);save();draw()}
+ }else head=`<div class="v">Your output (${r.values.length} rows)</div>`;
+ $("out").innerHTML=head+tbl(r,50)+(sq.trim()!==$("ed").value.trim()?`<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--mu);font-size:13px">Show query as executed (translated to SQLite)</summary><pre class="sch">${sq.replace(/</g,"&lt;")}</pre></details>`:"")}
+$("run").onclick=()=>run(false);$("sub").onclick=()=>run(true);
+$("rs").onclick=()=>{$("ed").value="-- Write your query here\n";drafts[cur]=$("ed").value;save();hlr()};
+show(0);
+if(typeof initSqlJs==="function")initSqlJs().then(SQL=>{build(SQL);$("st").textContent="Engine ready ✓";show(cur)}).catch(()=>$("st").textContent="Engine failed to load");
+else $("st").textContent="Engine failed to load";
+</script></body></html>
